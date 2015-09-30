@@ -66,10 +66,25 @@ app.get('/plist/:file', function(req, res) {
 		if (err) throw err;
 		var template = data.toString();
 
+		file_name = req.params.file;
+		var pattern = /(.+)_v(.+)@(.+)/;
+		var match = pattern.exec(file_name);
+
+		try {
+			var app_name = match[1];
+			var bundle_version = match[2];
+			var bundle_id = match[3];
+		} catch (e) {
+			console.log(e);
+		}
+
 		var rendered = mustache.render(template, {
 			name: req.params.file,
 			ip: ipAddress,
 			port: port,
+			app_name: app_name,
+			bundle_id: bundle_id,
+			bundle_version: bundle_version,
 		});
 
 		res.set('Content-Type', 'text/plain; charset=utf-8');
@@ -83,7 +98,9 @@ function itemWithEnv(env) {
 	var stat = fs.statSync(ipasDir + '/' + env + '.ipa');
 	var time = new Date(stat.mtime);
 	var timeString = strftime('%F %H:%M', time);
+	var app_name = env.replace(/@[^]+$/, '')
 	return {
+		app_name: app_name,
 		name: env,
 		description: '   更新: ' + timeString,
 		time: time,

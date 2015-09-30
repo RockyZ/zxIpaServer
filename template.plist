@@ -17,13 +17,13 @@
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.zztx.{{name}}</string>
+				<string>{{bundle_id}}</string>
 				<key>bundle-version</key>
-				<string>1.0</string>
+				<string>{{bundle_version}}</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>
-				<string>{{name}}</string>
+				<string>{{app_name}}</string>
 			</dict>
 		</dict>
 	</array>
