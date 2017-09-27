@@ -60,6 +60,13 @@ app.get(['/', '/download'], function(req, res, next) {
 	})
 });
 
+app.get('/install/:file', function(req, res) {
+	console.log(file_name)
+	res.writeHead(302, {
+		'Location' : 'itms-services://?action=download-manifest&url=https://' + ipAddress + ':' + port + '/plist/' + file_name
+	});
+	res.end();
+});
 
 app.get('/plist/:file', function(req, res) {
 	fs.readFile('template.plist', function(err, data) {
