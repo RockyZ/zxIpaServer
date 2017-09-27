@@ -61,7 +61,7 @@ app.get(['/', '/download'], function(req, res, next) {
 });
 
 app.get('/install/:file', function(req, res) {
-	console.log(file_name)
+	file_name = req.params.file;
 	res.writeHead(302, {
 		'Location' : 'itms-services://?action=download-manifest&url=https://' + ipAddress + ':' + port + '/plist/' + file_name
 	});
