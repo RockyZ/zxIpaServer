@@ -12,7 +12,7 @@ var options = {
 	cert: fs.readFileSync('cer/mycert1.cer', 'utf8')
 };
 
-var ipasDir = 'ipas';
+var ipasDir = '/home/ipa';
 var port = 1234;
 var ipAddress = underscore
 	.chain(require('os').networkInterfaces())
@@ -27,7 +27,7 @@ var ipAddress = underscore
 console.log('https://' + ipAddress + ':' + port + '/download');
 
 var app = express();
-app.use('/', express.static(__dirname + '/' + ipasDir));
+app.use('/', express.static(ipasDir));
 app.use('/qrcode', express.static(__dirname + '/qrcode'));
 app.use('/cer', express.static(__dirname + '/cer'));
 
