@@ -3,6 +3,7 @@ var https = require('https');
 var path = require('path');
 
 var express = require('express');
+var fileUpload = require('express-fileupload');
 var mustache = require('mustache');
 var strftime = require('strftime');
 var underscore = require('underscore');
@@ -30,6 +31,7 @@ var app = express();
 app.use('/', express.static(ipasDir));
 app.use('/qrcode', express.static(__dirname + '/qrcode'));
 app.use('/cer', express.static(__dirname + '/cer'));
+app.use(fileUpload());
 
 app.get(['/', '/download'], function(req, res, next) {
 
@@ -98,6 +100,32 @@ app.get('/plist/:file', function(req, res) {
 		res.send(rendered);
 	})
 });
+
+app.post('/upload', function(req, res) {
+  if (!req.files)
+    return res.status(400).send('No files were uploaded.');
+
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  let sampleFile = req.files.sampleFile;
+
+  // Use the mv() method to place the file somewhere on your server
+  sampleFile.mv(ipasDir + '/' + sampleFile.name, function(err) {
+    if (err)
+      return res.status(500).send(err);
+
+    res.send('File uploaded!');
+  });
+});
+
+app.get('/upload.html', function(req, res, next) {
+
+	fs.readFile('upload.html', function(err, data) {
+		if (err) throw err;
+		res.set('Content-Type', 'text/html; charset=utf-8');
+		res.send(data);
+	})
+});
+
 
 https.createServer(options, app).listen(port);
 
