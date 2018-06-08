@@ -4,10 +4,11 @@
   "description": "Create a HTTPS Server to install ipa locally",
   "main": "index.js",
   "dependencies": {
-    "connect-busboy": "0.0.2",
+    "busboy": "^0.2.14",
     "dbushell-grunt-mustatic": "^0.1.1",
     "express": "^4.13.1",
     "mustache": "^2.1.2",
+    "npm": "^6.1.0",
     "strftime": "^0.9.2",
     "underscore": "^1.8.3"
   },

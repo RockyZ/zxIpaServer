@@ -3,10 +3,10 @@ var https = require('https');
 var path = require('path');
 
 var express = require('express');
-var busboy = require('connect-busboy');
 var mustache = require('mustache');
 var strftime = require('strftime');
 var underscore = require('underscore');
+var Busboy = require('busboy');
 
 var options = {
 	key: fs.readFileSync('cer/mycert1.key', 'utf8'),
@@ -31,7 +31,6 @@ var app = express();
 app.use('/', express.static(ipasDir));
 app.use('/qrcode', express.static(__dirname + '/qrcode'));
 app.use('/cer', express.static(__dirname + '/cer'));
-app.use(busboy());
 
 app.get(['/', '/download'], function(req, res, next) {
 
@@ -102,21 +101,18 @@ app.get('/plist/:file', function(req, res) {
 });
 
 app.post('/upload', function(req, res) {
-
-	req.busboy.on('file', function(fieldname, file, filename) {
-		console.log('on:file');
+	var busboy = new Busboy({ headers: req.headers });
+	busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+	  console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+	  var saveTo = path.join(ipasDir, path.basename(filename));
+	  file.pipe(fs.createWriteStream(saveTo));
 	});
-
-	req.busboy.on('sampleFile', function(fieldname, value, valTruncated, keyTrancated) {
-		console.log()
+	busboy.on('finish', function() {
+	  console.log('Done parsing form!');
+	  res.writeHead(200, { Connection: 'close' });
+	  res.end("Upload complete!");
 	});
-
-	req.busboy.once('end', function() {
-		console.log('once:end');
-		res.send('File uploaded!')
-	});
-
-	req.pipe(req.busboy);
+	req.pipe(busboy);
 });
 
 app.get('/upload.html', function(req, res, next) {
