@@ -3,7 +3,7 @@ var https = require('https');
 var path = require('path');
 
 var express = require('express');
-var fileUpload = require('express-fileupload');
+var busboy = require('connect-busboy');
 var mustache = require('mustache');
 var strftime = require('strftime');
 var underscore = require('underscore');
@@ -31,7 +31,7 @@ var app = express();
 app.use('/', express.static(ipasDir));
 app.use('/qrcode', express.static(__dirname + '/qrcode'));
 app.use('/cer', express.static(__dirname + '/cer'));
-app.use(fileUpload());
+app.use(busboy());
 
 app.get(['/', '/download'], function(req, res, next) {
 
@@ -102,19 +102,21 @@ app.get('/plist/:file', function(req, res) {
 });
 
 app.post('/upload', function(req, res) {
-  if (!req.files)
-    return res.status(400).send('No files were uploaded.');
 
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let sampleFile = req.files.sampleFile;
+	req.busboy.on('file', function(fieldname, file, filename) {
+		console.log('on:file');
+	});
 
-  // Use the mv() method to place the file somewhere on your server
-  sampleFile.mv(ipasDir + '/' + sampleFile.name, function(err) {
-    if (err)
-      return res.status(500).send(err);
+	req.busboy.on('sampleFile', function(fieldname, value, valTruncated, keyTrancated) {
+		console.log()
+	});
 
-    res.send('File uploaded!');
-  });
+	req.busboy.once('end', function() {
+		console.log('once:end');
+		res.send('File uploaded!')
+	});
+
+	req.pipe(req.busboy);
 });
 
 app.get('/upload.html', function(req, res, next) {
