@@ -4,6 +4,8 @@ mkdir cer
 cd cer
 
 ip=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+iparray=($ip)
+ip=${iparray[0]}
 echo $ip
 
 openssl genrsa -out myselfsigned.key 2048
